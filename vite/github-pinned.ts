@@ -7,6 +7,8 @@ import { resolve } from 'node:path';
  *   default export   — the repos pinned on your GitHub profile
  *   `featuredRepos`  — details for repos named in site.config.json `featured`
  *                      that aren't already in your `projects` list
+ *   `languageStats`  — how many of your public, non-fork repos use each
+ *                      language (GitHub's main language per repo), most used first
  *
  * GitHub's REST API doesn't expose pins (GraphQL needs a token), and browsers
  * can't read github.com directly, so this runs at dev/build time: it reads the
@@ -80,9 +82,33 @@ async function fetchPinned(username: string): Promise<PinnedRepo[]> {
   return repos.filter((r): r is PinnedRepo => r !== null);
 }
 
+export interface LanguageStat {
+  name: string;
+  repos: number;
+}
+
+/** One request for all your repos (paginated), counting each repo's main language. */
+async function fetchLanguageStats(username: string, hideRepos: string[]): Promise<LanguageStat[]> {
+  const hidden = new Set(hideRepos.map((n) => n.toLowerCase()));
+  const counts = new Map<string, number>();
+  for (let page = 1; page <= 5; page++) {
+    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?type=owner&per_page=100&page=${page}`, { headers: headers() });
+    if (!res.ok) throw new Error(`repos ${res.status}`);
+    const repos = (await res.json()) as { name: string; fork: boolean; archived: boolean; language: string | null }[];
+    for (const r of repos) {
+      if (r.fork || r.archived || !r.language || hidden.has(r.name.toLowerCase())) continue;
+      counts.set(r.language, (counts.get(r.language) ?? 0) + 1);
+    }
+    if (repos.length < 100) break;
+  }
+  return [...counts].map(([name, repos]) => ({ name, repos })).sort((a, b) => b.repos - a.repos || a.name.localeCompare(b.name));
+}
+
 interface Cache {
   username: string;
   pinnedAt: number;
+  languagesAt?: number;
+  languages?: LanguageStat[];
   pinned: PinnedRepo[];
   /** "owner/name" (lowercase) → repo, or null if it doesn't exist. */
   repos: Record<string, { at: number; repo: PinnedRepo | null }>;
@@ -98,19 +124,19 @@ function splitRepo(entry: string, username: string): [string, string] {
 export function githubPinned(): Plugin {
   const cacheFile = resolve('node_modules/.cache/nyx-github-pinned.json');
 
-  async function load(): Promise<{ pinned: PinnedRepo[]; featured: PinnedRepo[] }> {
+  async function load(): Promise<{ pinned: PinnedRepo[]; featured: PinnedRepo[]; languages: LanguageStat[] }> {
     let config: {
-      github?: { username?: string; featurePinned?: boolean };
+      github?: { username?: string; featurePinned?: boolean; stackFromRepos?: boolean; hideRepos?: string[] };
       featured?: string[];
       projects?: { id: string; repo?: string }[];
     };
     try {
       config = JSON.parse(readFileSync(resolve('site.config.json'), 'utf8'));
     } catch {
-      return { pinned: [], featured: [] };
+      return { pinned: [], featured: [], languages: [] };
     }
     const username = config.github?.username ?? '';
-    if (!username) return { pinned: [], featured: [] };
+    if (!username) return { pinned: [], featured: [], languages: [] };
 
     let cache: Cache = { username, pinnedAt: 0, pinned: [], repos: {} };
     try {
@@ -168,6 +194,23 @@ export function githubPinned(): Plugin {
       }
     }
 
+    // Language counts for the Stack section.
+    let languages: LanguageStat[] = [];
+    if (config.github?.stackFromRepos !== false) {
+      if (cache.languages && now - (cache.languagesAt ?? 0) < CACHE_MS) languages = cache.languages;
+      else {
+        try {
+          languages = await fetchLanguageStats(username, config.github?.hideRepos ?? []);
+          cache.languages = languages;
+          cache.languagesAt = now;
+          dirty = true;
+        } catch (err) {
+          console.warn(`[github-pinned] couldn't load language stats for ${username}: ${(err as Error).message}`);
+          languages = cache.languages ?? [];
+        }
+      }
+    }
+
     if (dirty) {
       try {
         mkdirSync(resolve('node_modules/.cache'), { recursive: true });
@@ -176,7 +219,7 @@ export function githubPinned(): Plugin {
         /* cache is optional */
       }
     }
-    return { pinned, featured };
+    return { pinned, featured, languages };
   }
 
   return {
@@ -187,8 +230,12 @@ export function githubPinned(): Plugin {
     async load(id) {
       if (id !== RESOLVED_ID) return;
       this.addWatchFile(resolve('site.config.json'));
-      const { pinned, featured } = await load();
-      return `export default ${JSON.stringify(pinned)};\nexport const featuredRepos = ${JSON.stringify(featured)};`;
+      const { pinned, featured, languages } = await load();
+      return [
+        `export default ${JSON.stringify(pinned)};`,
+        `export const featuredRepos = ${JSON.stringify(featured)};`,
+        `export const languageStats = ${JSON.stringify(languages)};`,
+      ].join('\n');
     },
     // Editing site.config.json re-runs the lookup in dev.
     handleHotUpdate({ file, server }) {

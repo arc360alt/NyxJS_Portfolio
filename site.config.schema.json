@@ -71,6 +71,8 @@
       "properties": {
         "username": { "type": "string" },
         "featurePinned": { "type": "boolean", "description": "Featured carousel = the repos pinned on your GitHub profile, fetched at build time. Only used when the top-level `featured` list is empty or missing." },
+        "stackFromRepos": { "type": "boolean", "description": "Build the Stack chips from the main language of each of your public repos (fetched at build time), most used first. Off → use the `stack` list." },
+        "hideLanguages": { "type": "array", "items": { "type": "string" }, "description": "Languages to leave out of the Stack chips, e.g. [\"Just\", \"Shell\"]." },
         "includeOtherRepos": { "type": "boolean", "description": "Also list every other public, non-fork repo (fetched live) under All projects." },
         "hideRepos": { "type": "array", "items": { "type": "string" }, "description": "Repo names to leave out when includeOtherRepos is on." }
       }
@@ -120,7 +122,7 @@
     },
     "stack": {
       "type": "array",
-      "description": "Filter chip groups. Chip labels should match the `tech` names used on projects.",
+      "description": "Hand-written filter chip groups. Only used when github.stackFromRepos is off or GitHub can't be reached. Chip labels should match the `tech` names used on projects.",
       "items": {
         "type": "object",
         "additionalProperties": false,

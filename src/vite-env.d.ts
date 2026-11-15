@@ -9,4 +9,5 @@ declare module 'virtual:github-pinned' {
   const repos: import('../vite/github-pinned').PinnedRepo[];
   export default repos;
   export const featuredRepos: import('../vite/github-pinned').PinnedRepo[];
+  export const languageStats: import('../vite/github-pinned').LanguageStat[];
 }

@@ -33,6 +33,8 @@
 
   "github": {
     "username": "arc360alt",
+    "stackFromRepos": true,
+    "hideLanguages": [],
     "includeOtherRepos": true,
     "hideRepos": []
   },

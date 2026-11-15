@@ -3,7 +3,7 @@
  * Typed view of /site.config.json. Edit that file, not this one — you shouldn't
  * need to touch any component to change your name, links, projects or the visor.
  */
-import pinnedRepos, { featuredRepos } from 'virtual:github-pinned';
+import pinnedRepos, { featuredRepos, languageStats } from 'virtual:github-pinned';
 import pfpColors from 'virtual:pfp-colors';
 import rawConfig from '../site.config.json';
 import { sameRepo, techFromGithub, titleFromRepo } from './lib/tech';
@@ -41,7 +41,7 @@ interface SiteConfig {
   profile: { name: string; handle?: string; role?: string; location?: string; bio: string; email?: string; banner?: string; pfp?: string; pfpAlt?: string };
   visor?: Partial<{ enabled: boolean; showInAppBar: boolean; greeting: string }>;
   theme?: { source?: 'pfp' | 'seed'; seed?: string; wallpapers?: { name: string; seed: string }[] };
-  github?: Partial<{ username: string; featurePinned: boolean; includeOtherRepos: boolean; hideRepos: string[] }>;
+  github?: Partial<{ username: string; featurePinned: boolean; stackFromRepos: boolean; hideLanguages: string[]; includeOtherRepos: boolean; hideRepos: string[] }>;
   projectsGrid?: Partial<{ initialRows: number }>;
   featured?: string[];
   discord?: Partial<{ enabled: boolean; username: string; userId: string; showActivity: boolean; showSpotify: boolean; showStatusOnPfp: boolean }>;
@@ -91,7 +91,29 @@ export const site = {
   socials: config.socials ?? [],
 };
 
-export const stack: { label: string; items: Tech[] }[] = config.stack ?? [];
+/** Languages that go under "Web & UI" instead of "Languages". */
+const webLanguages = new Set(['HTML', 'CSS', 'SCSS', 'Sass', 'Less', 'Svelte', 'Vue', 'Astro', 'MDX', 'Handlebars', 'EJS']);
+
+/**
+ * Stack chips. By default they come from GitHub: every language that's the
+ * main language of at least one of your public repos, most used first
+ * (`github.stackFromRepos`, `github.hideLanguages`). If that's off or GitHub
+ * can't be reached, the hand-written `stack` list is used.
+ */
+function buildStack(): { label: string; items: Tech[] }[] {
+  if (github.stackFromRepos === false || !languageStats.length) return config.stack ?? [];
+  const hidden = new Set((github.hideLanguages ?? []).map((l) => l.toLowerCase()));
+  const langs = languageStats.filter((l) => !hidden.has(l.name.toLowerCase()));
+  const groups = [
+    { label: 'Languages', items: langs.filter((l) => !webLanguages.has(l.name)).map((l) => l.name) },
+    { label: 'Web & UI', items: langs.filter((l) => webLanguages.has(l.name)).map((l) => l.name) },
+  ];
+  return groups.filter((g) => g.items.length);
+}
+
+export const stack = buildStack();
+/** True when the Stack chips came from your GitHub repos. */
+export const stackFromGithub = stack !== (config.stack ?? []) && stack.length > 0 && github.stackFromRepos !== false && languageStats.length > 0;
 
 type GithubRepo = (typeof pinnedRepos)[number];
 
