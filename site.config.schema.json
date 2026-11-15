@@ -1,0 +1,187 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Nyx // Visor site config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile", "projects"],
+  "definitions": {
+    "icon": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Material Symbols Rounded icon name, e.g. \"rocket_launch\". Browse: https://fonts.google.com/icons"
+    },
+    "shape": {
+      "enum": ["circle", "cookie4", "cookie6", "cookie9", "cookie12", "clover4", "clover8", "softBurst", "sunny", "flower", "squircle"]
+    }
+  },
+  "properties": {
+    "$schema": { "type": "string" },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "bio"],
+      "properties": {
+        "name": { "type": "string" },
+        "handle": { "type": "string" },
+        "role": { "type": "string" },
+        "location": { "type": "string" },
+        "bio": { "type": "string" },
+        "email": { "type": "string", "description": "Leave empty to hide all email buttons." },
+        "banner": { "type": "string", "description": "File in /public. Missing files show a tonal placeholder." },
+        "pfp": { "type": "string", "description": "File in /public. Missing files show a monogram placeholder." },
+        "pfpAlt": { "type": "string" }
+      }
+    },
+    "visor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "description": "Show the LED visor anywhere on the site." },
+        "showInAppBar": { "type": "boolean", "description": "Show the tiny visor next to your name in the top bar." },
+        "greeting": { "type": "string", "description": "Text that scrolls across the visor on load. Letters, numbers and basic punctuation." }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "enum": ["pfp", "seed"],
+          "description": "\"pfp\": build the Material You colors from your profile picture (PNG), like Android does from a wallpaper. \"seed\": use `seed` below."
+        },
+        "seed": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$", "description": "Theme color when source is \"seed\", or if the pfp can't be read." },
+        "wallpapers": {
+          "type": "array",
+          "description": "Extra \"Basic colors\" visitors can pick in the palette menu. Use [] to only offer your pfp colors.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "seed"],
+            "properties": {
+              "name": { "type": "string" },
+              "seed": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
+            }
+          }
+        }
+      }
+    },
+    "github": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "username": { "type": "string" },
+        "featurePinned": { "type": "boolean", "description": "Featured carousel = the repos pinned on your GitHub profile, fetched at build time. Only used when the top-level `featured` list is empty or missing." },
+        "includeOtherRepos": { "type": "boolean", "description": "Also list every other public, non-fork repo (fetched live) under All projects." },
+        "hideRepos": { "type": "array", "items": { "type": "string" }, "description": "Repo names to leave out when includeOtherRepos is on." }
+      }
+    },
+    "discord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "username": { "type": "string" },
+        "userId": {
+          "type": "string",
+          "pattern": "^([0-9]{17,20})?$",
+          "description": "Your numeric Discord user ID (Settings → Advanced → Developer Mode, then right-click yourself → Copy User ID). Lanyard needs this; you must be in discord.gg/lanyard."
+        },
+        "showActivity": { "type": "boolean" },
+        "showSpotify": { "type": "boolean" },
+        "showStatusOnPfp": { "type": "boolean", "description": "Small online/idle/dnd dot on your profile picture." }
+      }
+    },
+    "socials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "href", "icon"],
+        "properties": {
+          "label": { "type": "string" },
+          "href": { "type": "string" },
+          "icon": { "$ref": "#/definitions/icon" },
+          "handle": { "type": "string" }
+        }
+      }
+    },
+    "featured": {
+      "type": "array",
+      "description": "Projects in the Featured carousel, in this order. Each entry is a project id from `projects`, one of your repo names (\"pronouns\"), or \"owner/repo\". Repos that aren't in `projects` are looked up on GitHub at build time. Remove this list (or leave it empty) to feature the repos pinned on your GitHub profile instead.",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "projectsGrid": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "initialRows": { "type": "integer", "minimum": 1, "description": "Rows of project cards shown before the \"Show more\" button." }
+      }
+    },
+    "stack": {
+      "type": "array",
+      "description": "Filter chip groups. Chip labels should match the `tech` names used on projects.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "items"],
+        "properties": {
+          "label": { "type": "string" },
+          "items": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "description": "Shown in this order. Featured projects go in the carousel; the rest go in the grid.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "description", "tech"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "details": { "type": "string", "description": "Longer text for the detail view. Separate paragraphs with a blank line (\\n\\n)." },
+          "tech": { "type": "array", "items": { "type": "string" } },
+          "repo": { "type": "string" },
+          "live": { "type": "string" },
+          "image": { "type": "string", "description": "Screenshot path in /public, e.g. \"projects/pronouns.png\". 16:9 works best." },
+          "icon": { "$ref": "#/definitions/icon" },
+          "featured": { "type": "boolean", "description": "Show in the featured carousel (only used when github.featurePinned is off or pins can't be loaded)." },
+          "highlight": { "type": "boolean", "description": "Give it an elevated card in the grid." },
+          "hidden": { "type": "boolean", "description": "Keep it in the file but don't show it." }
+        }
+      }
+    },
+    "about": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paragraphs": { "type": "array", "items": { "type": "string" } },
+        "facts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["icon", "headline"],
+            "properties": {
+              "icon": { "$ref": "#/definitions/icon" },
+              "shape": { "$ref": "#/definitions/shape" },
+              "headline": { "type": "string" },
+              "supporting": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "notFound": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "body": { "type": "string" }
+      }
+    }
+  }
+}

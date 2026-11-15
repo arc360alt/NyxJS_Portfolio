@@ -1,0 +1,150 @@
+{
+  "$schema": "./site.config.schema.json",
+
+  "profile": {
+    "name": "Nyx",
+    "handle": "NyxJS",
+    "role": "Full stack developer",
+    "location": "Chicago",
+    "bio": "I’m a software developer from the Chicago area, creating completely open source apps, games and websites for people to use in their daily tasks.",
+    "email": "",
+    "banner": "banner.png",
+    "pfp": "pfp.png",
+    "pfpAlt": "Nyx’s profile picture"
+  },
+
+  "visor": {
+    "enabled": false,
+    "showInAppBar": false,
+    "greeting": "HI, I'M NYX"
+  },
+
+  "theme": {
+    "source": "pfp",
+    "seed": "#6B4EFF",
+    "wallpapers": [
+      { "name": "Violet", "seed": "#6B4EFF" },
+      { "name": "Indigo", "seed": "#4F5BD5" },
+      { "name": "Blue", "seed": "#2F7BF6" },
+      { "name": "Orchid", "seed": "#B04FD6" },
+      { "name": "Pink", "seed": "#E0559B" }
+    ]
+  },
+
+  "github": {
+    "username": "arc360alt",
+    "includeOtherRepos": true,
+    "hideRepos": []
+  },
+
+  "discord": {
+    "enabled": true,
+    "username": "nyxjs",
+    "userId": "719973177954140210",
+    "showActivity": true,
+    "showSpotify": true,
+    "showStatusOnPfp": true
+  },
+
+  "socials": [
+    { "label": "GitHub", "href": "https://github.com/arc360alt", "icon": "code", "handle": "@arc360alt" },
+    { "label": "Website", "href": "https://nyxdev.app", "icon": "language", "handle": "nyxdev.app" },
+    { "label": "YouTube", "href": "https://youtube.com/@arc360", "icon": "smart_display", "handle": "@arc360" },
+    { "label": "TikTok", "href": "https://tiktok.com/@arc360yt", "icon": "music_note", "handle": "@arc360yt" }
+  ],
+
+  "featured": [
+    "liquiddesktop",
+    "lumen",
+    "lumen-website",
+    "progression-mod",
+    "skyview",
+    "pronouns"
+  ],
+
+  "projectsGrid": {
+    "initialRows": 2
+  },
+
+  "stack": [
+    { "label": "Languages", "items": ["TypeScript", "JavaScript", "Rust", "Go", "Java", "Python"] },
+    { "label": "Runtime", "items": ["Node.js"] },
+    { "label": "Frontend", "items": ["HTML", "CSS", "Tailwind CSS", "Svelte"] }
+  ],
+
+  "projects": [
+    {
+      "id": "pronouns",
+      "title": "Pronouns",
+      "description": "A pronouns sharing app inspired by pronouns.cc.",
+      "tech": ["Svelte", "TypeScript", "CSS"],
+      "repo": "https://github.com/arc360alt/pronouns",
+      "live": "https://pronouns.sbs",
+      "icon": "badge"
+    },
+    {
+      "id": "progression-mod",
+      "title": "Progression Mod",
+      "description": "A progression mod for Minecraft 26.1+ that makes playthroughs more fun.",
+      "tech": ["Java", "Python"],
+      "repo": "https://github.com/arc360alt/progression-mod",
+      "live": "https://modrinth.com/mod/progression-mod",
+      "icon": "trending_up"
+    },
+    {
+      "id": "stormview-rewrite",
+      "title": "StormView Rewrite",
+      "description": "A rewrite of StormView.",
+      "tech": ["JavaScript", "CSS", "HTML"],
+      "repo": "https://github.com/StormView-Project/StormView-Rewrite",
+      "live": "https://storm-view-rewrite.vercel.app",
+      "icon": "thunderstorm",
+      "highlight": true
+    },
+    {
+      "id": "videodestroyer",
+      "title": "Video Destroyer",
+      "description": "A simple website that destroys any video you put into it.",
+      "tech": ["JavaScript", "Python", "CSS", "HTML"],
+      "repo": "https://github.com/arc360alt/videodestroyer",
+      "live": "https://videodestroyer.vercel.app",
+      "icon": "movie"
+    },
+    {
+      "id": "optiark-new",
+      "title": "OptiArk",
+      "description": "The new repo for building the OptiArk Pack, now using packwiz!",
+      "tech": ["Shell"],
+      "repo": "https://github.com/arc360alt/OptiArk-New",
+      "icon": "inventory_2"
+    },
+    {
+      "id": "arcswebsite",
+      "title": "arc360hub",
+      "description": "Website for stuff.",
+      "tech": ["JavaScript", "HTML", "CSS"],
+      "repo": "https://github.com/arc360alt/arcswebsite",
+      "live": "https://nyxdev.app",
+      "icon": "language"
+    }
+  ],
+
+  "about": {
+    "paragraphs": [
+      "I make random apps and tools for people to sometimes use and add to their minecraft modpacks if their mods, they occasionaly work and I work on them sometimes.",
+      "I mostly work with MacOS and Linux things, most recently Linux desktop enviroments and MacOS apps written in Swift as I've been learning that as my new coding language that I know.",
+      "You can go and fork any of my projects on Github, just give credit somewhere in your projects and please actualy change somthing in your forks instead of forking them and doing nothing with it."
+    ],
+    "facts": [
+      { "icon": "code_blocks", "shape": "cookie9", "headline": "Open source by default", "supporting": "Every app I make is open source, you can see the code and fork it." },
+      { "icon": "today", "shape": "clover4", "headline": "Tools for daily life", "supporting": "Planners, utilities and small games and linux DE's." },
+      { "icon": "stacks", "shape": "squircle", "headline": "Full stack", "supporting": "From Rust and Go backends to TypeScript frontends." },
+      { "icon": "location_on", "shape": "softBurst", "headline": "Chicago, IL", "supporting": "Building on Central Time." }
+    ]
+  },
+
+  "notFound": {
+    "title": "Signal lost",
+    "body": "This page doesn’t exist. Maybe it was never compiled, or maybe it booped itself out of existence."
+  }
+}

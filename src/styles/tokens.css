@@ -1,0 +1,162 @@
+/*
+ * Material 3 design tokens, exposed to Tailwind via @theme.
+ *   bg-primary-container text-on-primary-container rounded-xl text-headline-md ease-emphasized
+ * Color values come from src/theme/scheme.ts at runtime (--md-sys-color-*).
+ */
+
+@theme {
+  /* Only M3 roles — no default Tailwind palette. */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #fff;
+  --color-black: #000;
+
+  --font-*: initial;
+  --font-sans: "Google Sans Flex", "Roboto Flex", "Google Sans", Roboto, system-ui, sans-serif;
+
+  /* M3 window size classes: compact < 600 ≤ medium < 840 ≤ expanded < 1200 ≤ large < 1600 ≤ xlarge */
+  --breakpoint-*: initial;
+  --breakpoint-medium: 600px;
+  --breakpoint-expanded: 840px;
+  --breakpoint-large: 1200px;
+  --breakpoint-xlarge: 1600px;
+
+  /* M3 shape scale */
+  --radius-*: initial;
+  --radius-none: 0px;
+  --radius-xs: 4px;        /* extra-small */
+  --radius-sm: 8px;        /* small */
+  --radius-md: 12px;       /* medium */
+  --radius-lg: 16px;       /* large */
+  --radius-lg-plus: 20px;  /* large-increased */
+  --radius-xl: 28px;       /* extra-large */
+  --radius-xl-plus: 32px;  /* extra-large-increased */
+  --radius-2xl: 48px;      /* extra-extra-large */
+  --radius-full: 9999px;   /* full */
+
+  /* M3 type scale */
+  --text-*: initial;
+  --text-display-lg: 3.5625rem;   --text-display-lg--line-height: 4rem;     --text-display-lg--letter-spacing: -0.015625rem;
+  --text-display-md: 2.8125rem;   --text-display-md--line-height: 3.25rem;  --text-display-md--letter-spacing: 0;
+  --text-display-sm: 2.25rem;     --text-display-sm--line-height: 2.75rem;  --text-display-sm--letter-spacing: 0;
+  --text-headline-lg: 2rem;       --text-headline-lg--line-height: 2.5rem;  --text-headline-lg--letter-spacing: 0;
+  --text-headline-md: 1.75rem;    --text-headline-md--line-height: 2.25rem; --text-headline-md--letter-spacing: 0;
+  --text-headline-sm: 1.5rem;     --text-headline-sm--line-height: 2rem;    --text-headline-sm--letter-spacing: 0;
+  --text-title-lg: 1.375rem;      --text-title-lg--line-height: 1.75rem;    --text-title-lg--letter-spacing: 0;
+  --text-title-md: 1rem;          --text-title-md--line-height: 1.5rem;     --text-title-md--letter-spacing: 0.009375rem; --text-title-md--font-weight: 500;
+  --text-title-sm: 0.875rem;      --text-title-sm--line-height: 1.25rem;    --text-title-sm--letter-spacing: 0.00625rem;  --text-title-sm--font-weight: 500;
+  --text-body-lg: 1rem;           --text-body-lg--line-height: 1.5rem;      --text-body-lg--letter-spacing: 0.03125rem;
+  --text-body-md: 0.875rem;       --text-body-md--line-height: 1.25rem;     --text-body-md--letter-spacing: 0.015625rem;
+  --text-body-sm: 0.75rem;        --text-body-sm--line-height: 1rem;        --text-body-sm--letter-spacing: 0.025rem;
+  --text-label-lg: 0.875rem;      --text-label-lg--line-height: 1.25rem;    --text-label-lg--letter-spacing: 0.00625rem;  --text-label-lg--font-weight: 500;
+  --text-label-md: 0.75rem;       --text-label-md--line-height: 1rem;       --text-label-md--letter-spacing: 0.03125rem;  --text-label-md--font-weight: 500;
+  --text-label-sm: 0.6875rem;     --text-label-sm--line-height: 1rem;       --text-label-sm--letter-spacing: 0.03125rem;  --text-label-sm--font-weight: 500;
+
+  /* M3 motion: easing */
+  --ease-*: initial;
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --ease-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+
+  /* M3 elevation — used sparingly; hierarchy comes from tonal surfaces. */
+  --shadow-*: initial;
+  --shadow-1: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 1px 3px 1px rgb(0 0 0 / 0.15);
+  --shadow-2: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 2px 6px 2px rgb(0 0 0 / 0.15);
+  --shadow-3: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 4px 8px 3px rgb(0 0 0 / 0.15);
+}
+
+@theme inline {
+  --color-background: var(--md-sys-color-background);
+  --color-error: var(--md-sys-color-error);
+  --color-error-container: var(--md-sys-color-error-container);
+  --color-inverse-on-surface: var(--md-sys-color-inverse-on-surface);
+  --color-inverse-primary: var(--md-sys-color-inverse-primary);
+  --color-inverse-surface: var(--md-sys-color-inverse-surface);
+  --color-on-background: var(--md-sys-color-on-background);
+  --color-on-error: var(--md-sys-color-on-error);
+  --color-on-error-container: var(--md-sys-color-on-error-container);
+  --color-on-primary: var(--md-sys-color-on-primary);
+  --color-on-primary-container: var(--md-sys-color-on-primary-container);
+  --color-on-primary-fixed: var(--md-sys-color-on-primary-fixed);
+  --color-on-primary-fixed-variant: var(--md-sys-color-on-primary-fixed-variant);
+  --color-on-secondary: var(--md-sys-color-on-secondary);
+  --color-on-secondary-container: var(--md-sys-color-on-secondary-container);
+  --color-on-secondary-fixed: var(--md-sys-color-on-secondary-fixed);
+  --color-on-secondary-fixed-variant: var(--md-sys-color-on-secondary-fixed-variant);
+  --color-on-surface: var(--md-sys-color-on-surface);
+  --color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --color-on-tertiary: var(--md-sys-color-on-tertiary);
+  --color-on-tertiary-container: var(--md-sys-color-on-tertiary-container);
+  --color-on-tertiary-fixed: var(--md-sys-color-on-tertiary-fixed);
+  --color-on-tertiary-fixed-variant: var(--md-sys-color-on-tertiary-fixed-variant);
+  --color-outline: var(--md-sys-color-outline);
+  --color-outline-variant: var(--md-sys-color-outline-variant);
+  --color-primary: var(--md-sys-color-primary);
+  --color-primary-container: var(--md-sys-color-primary-container);
+  --color-primary-fixed: var(--md-sys-color-primary-fixed);
+  --color-primary-fixed-dim: var(--md-sys-color-primary-fixed-dim);
+  --color-scrim: var(--md-sys-color-scrim);
+  --color-secondary: var(--md-sys-color-secondary);
+  --color-secondary-container: var(--md-sys-color-secondary-container);
+  --color-secondary-fixed: var(--md-sys-color-secondary-fixed);
+  --color-secondary-fixed-dim: var(--md-sys-color-secondary-fixed-dim);
+  --color-shadow: var(--md-sys-color-shadow);
+  --color-surface: var(--md-sys-color-surface);
+  --color-surface-bright: var(--md-sys-color-surface-bright);
+  --color-surface-container: var(--md-sys-color-surface-container);
+  --color-surface-container-high: var(--md-sys-color-surface-container-high);
+  --color-surface-container-highest: var(--md-sys-color-surface-container-highest);
+  --color-surface-container-low: var(--md-sys-color-surface-container-low);
+  --color-surface-container-lowest: var(--md-sys-color-surface-container-lowest);
+  --color-surface-dim: var(--md-sys-color-surface-dim);
+  --color-surface-tint: var(--md-sys-color-surface-tint);
+  --color-surface-variant: var(--md-sys-color-surface-variant);
+  --color-tertiary: var(--md-sys-color-tertiary);
+  --color-tertiary-container: var(--md-sys-color-tertiary-container);
+  --color-tertiary-fixed: var(--md-sys-color-tertiary-fixed);
+  --color-tertiary-fixed-dim: var(--md-sys-color-tertiary-fixed-dim);
+}
+
+:root {
+  /* M3 motion: durations */
+  --md-sys-motion-duration-short1: 50ms;
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short3: 150ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium3: 350ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-duration-long1: 450ms;
+  --md-sys-motion-duration-long2: 500ms;
+  --md-sys-motion-duration-long3: 550ms;
+  --md-sys-motion-duration-long4: 600ms;
+
+  /* Spring fallbacks; motion.ts replaces them with linear() curves generated from M3 spring specs. */
+  --md-sys-motion-spring-fast-spatial: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --md-sys-motion-spring-fast-spatial-duration: 350ms;
+  --md-sys-motion-spring-default-spatial: cubic-bezier(0.34, 1.3, 0.64, 1);
+  --md-sys-motion-spring-default-spatial-duration: 450ms;
+  --md-sys-motion-spring-slow-spatial: cubic-bezier(0.34, 1.2, 0.64, 1);
+  --md-sys-motion-spring-slow-spatial-duration: 600ms;
+  --md-sys-motion-spring-fast-effects: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-spring-fast-effects-duration: 150ms;
+  --md-sys-motion-spring-default-effects: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-spring-default-effects-duration: 200ms;
+
+  /* M3 state layer opacities */
+  --md-sys-state-hover: 0.08;
+  --md-sys-state-focus: 0.1;
+  --md-sys-state-pressed: 0.1;
+  --md-sys-state-dragged: 0.16;
+
+  /* Layout */
+  --app-bar-height: 64px;
+  --nav-bar-height: 80px;
+  --rail-width: 96px;
+  --rail-width-expanded: 220px;
+}
