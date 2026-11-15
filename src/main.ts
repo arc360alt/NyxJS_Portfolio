@@ -15,7 +15,7 @@ import { Stack } from './sections/stack';
 import { store } from './state';
 import { installMotionTokens, prefersReducedMotion } from './theme/motion';
 import { installShapes } from './theme/shapes';
-import { initTheme } from './theme/theme';
+import { ensurePfpColors, initTheme } from './theme/theme';
 
 installShapes();
 installMotionTokens();
@@ -153,3 +153,4 @@ if (onHome) {
   if (visorConfig.enabled) setTimeout(() => visor.marquee(site.visorGreeting), 700);
 }
 store.loadGithub();
+ensurePfpColors();

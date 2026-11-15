@@ -58,9 +58,12 @@ async function compute(): Promise<PfpColor[]> {
     return [];
   }
   try {
-    return (await loadCore()).colorsFromPng(file);
+    const colors = (await loadCore()).colorsFromPng(file);
+    // Shows up in the build log (e.g. on Vercel) so you can confirm it worked.
+    console.log(`[pfp-colors] ${colors.map((c) => `${c.name} ${c.seed}`).join(', ') || 'no colors found'}`);
+    return colors;
   } catch (err) {
-    console.warn(`[pfp-colors] couldn't read ${file}: ${(err as Error).message}`);
+    console.warn(`[pfp-colors] couldn't extract colors from ${file} at build time; the browser will do it instead.\n  ${(err as Error).stack ?? err}`);
     return [];
   }
 }

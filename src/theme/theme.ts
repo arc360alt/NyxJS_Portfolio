@@ -1,6 +1,7 @@
 import { site } from '../content';
 import { storage } from '../lib/storage';
 import { prefersReducedMotion } from './motion';
+import { pickSeedColors, samplePixels, type SeedColor } from './extract';
 import { schemeToVars } from './scheme';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
@@ -15,10 +16,29 @@ const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
 let mode: ThemeMode = (storage.get(MODE_KEY) as ThemeMode | null) ?? 'system';
 if (!['system', 'light', 'dark'].includes(mode)) mode = 'system';
-const offered = [...site.pfpColors, ...site.wallpapers].map((w) => w.seed.toLowerCase());
-let seed = storage.get(SEED_KEY) ?? site.seed;
+/** Pfp colors extracted in the browser (when the build couldn't), keyed by image URL. */
+const PFP_CACHE_KEY = 'nyx:pfp-colors';
+const pfpUrl = `${import.meta.env.BASE_URL}${site.assets.pfp.replace(/^\//, '')}`;
+
+function readPfpCache(): SeedColor[] {
+  try {
+    const c = JSON.parse(storage.get(PFP_CACHE_KEY) ?? 'null');
+    return c?.src === pfpUrl && Array.isArray(c.colors) ? c.colors : [];
+  } catch {
+    return [];
+  }
+}
+
+let pfpColors: SeedColor[] = site.pfpColors.length ? site.pfpColors : site.themeSource === 'pfp' ? readPfpCache() : [];
+/** The color used when the visitor hasn't picked one. */
+let defaultSeed = pfpColors[0]?.seed ?? site.seed;
+
+const offered = () => [...pfpColors, ...site.wallpapers].map((w) => w.seed.toLowerCase());
+let seed = storage.get(SEED_KEY) ?? defaultSeed;
 // Ignore saved picks that are no longer offered (e.g. after changing your pfp).
-if (!offered.includes(seed.toLowerCase())) seed = site.seed;
+if (!offered().includes(seed.toLowerCase())) seed = defaultSeed;
+
+export const getPfpColors = () => pfpColors;
 
 export const getMode = () => mode;
 export const getSeed = () => seed;
@@ -87,7 +107,7 @@ export function toggleDark(origin?: { x: number; y: number }) {
 export function setSeed(next: string, origin?: { x: number; y: number }) {
   if (next.toLowerCase() === seed.toLowerCase()) return;
   seed = next;
-  if (next.toLowerCase() === site.seed.toLowerCase()) storage.remove(SEED_KEY);
+  if (next.toLowerCase() === defaultSeed.toLowerCase()) storage.remove(SEED_KEY);
   else storage.set(SEED_KEY, next);
   transition(apply, origin);
 }
@@ -97,4 +117,43 @@ export function initTheme() {
   darkQuery.addEventListener('change', () => {
     if (mode === 'system') transition(apply);
   });
+}
+
+/**
+ * Fallback for when the build couldn't read the pfp (see vite/pfp-colors.ts):
+ * extract the colors here from the image itself, then theme with them and
+ * cache the result so the next visit paints them immediately.
+ */
+export async function ensurePfpColors() {
+  if (site.pfpColors.length || site.themeSource !== 'pfp') return;
+  try {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = pfpUrl;
+    await img.decode();
+    const size = 128;
+    const scale = Math.min(1, size / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.max(1, Math.round(img.naturalWidth * scale));
+    const h = Math.max(1, Math.round(img.naturalHeight * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
+    ctx.drawImage(img, 0, 0, w, h);
+    const colors = pickSeedColors(samplePixels(ctx.getImageData(0, 0, w, h).data, w, h));
+    if (!colors.length) return;
+    storage.set(PFP_CACHE_KEY, JSON.stringify({ src: pfpUrl, colors }));
+    const changed = JSON.stringify(colors) !== JSON.stringify(pfpColors);
+    pfpColors = colors;
+    const followingDefault = seed.toLowerCase() === defaultSeed.toLowerCase();
+    defaultSeed = colors[0].seed;
+    if (followingDefault && seed.toLowerCase() !== defaultSeed.toLowerCase()) {
+      seed = defaultSeed;
+      transition(apply);
+    }
+    if (changed) window.dispatchEvent(new CustomEvent('pfpcolors'));
+  } catch {
+    /* no pfp, or it couldn't be read — keep the configured seed */
+  }
 }

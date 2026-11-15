@@ -1,7 +1,7 @@
 import { site } from '../content';
 import { h, icon, stateLayer } from '../lib/dom';
 import { seedTriad } from '../theme/scheme';
-import { getMode, getSeed, isDark, setMode, setSeed, toggleDark, type ThemeMode } from '../theme/theme';
+import { getMode, getSeed, isDark, setMode, setSeed, toggleDark, type ThemeMode, getPfpColors } from '../theme/theme';
 import { IconButton } from './button';
 
 const centerOf = (el: Element) => {
@@ -32,7 +32,22 @@ function radioGroup(container: HTMLElement, items: HTMLElement[], onSelect: (i: 
 
 /** Android-style wallpaper swatches that regenerate the whole scheme. */
 export function WallpaperSwatches(opts: { label?: string; stacked?: boolean } = {}) {
-  const fromPfp = site.pfpColors.map((w) => ({ ...w, pfp: true }));
+  // Re-renders if pfp colors arrive after load (browser fallback in theme.ts).
+  const host = h('div', { class: 'contents' });
+  let cleanup = () => {};
+  const render = () => {
+    cleanup();
+    const r = renderSwatches(opts);
+    host.replaceChildren(r.group);
+    cleanup = r.cleanup;
+  };
+  render();
+  window.addEventListener('pfpcolors', render);
+  return host;
+}
+
+function renderSwatches(opts: { label?: string; stacked?: boolean }) {
+  const fromPfp = getPfpColors().map((w) => ({ ...w, pfp: true }));
   const basic = site.wallpapers
     .filter((w) => !fromPfp.some((p) => p.seed.toLowerCase() === w.seed.toLowerCase()))
     .map((w) => ({ ...w, pfp: false }));
@@ -75,7 +90,7 @@ export function WallpaperSwatches(opts: { label?: string; stacked?: boolean } = 
   const update = () => sync(all.findIndex((w) => w.seed.toLowerCase() === getSeed().toLowerCase()));
   update();
   window.addEventListener('themechange', update);
-  return group;
+  return { group, cleanup: () => window.removeEventListener('themechange', update) };
 }
 
 /** Palette icon button that opens a small menu of wallpaper swatches. */

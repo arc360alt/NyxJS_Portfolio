@@ -84,6 +84,8 @@ export const site = {
   seed: pfpColors[0]?.seed ?? config.theme?.seed ?? '#6B4EFF',
   /** Colors pulled from your pfp at build time (empty if theme.source is "seed"). */
   pfpColors,
+  /** "pfp" (default) or "seed". */
+  themeSource: config.theme?.source ?? 'pfp',
   /** "Basic colors" in the palette menu. */
   wallpapers: config.theme?.wallpapers ?? [],
   github: { username: github.username, fetchRepos: github.includeOtherRepos, hide: github.hideRepos },
